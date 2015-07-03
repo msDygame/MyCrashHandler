@@ -1,18 +1,12 @@
-﻿package com.dygame.myuncaughtexceptionhandler;
+package com.dygame.myuncaughtexceptionhandler;
 
-import android.app.AlarmManager;
-import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -52,11 +46,11 @@ public class MyCrashHandler implements Thread.UncaughtExceptionHandler
     // 用於格式化日期,作為日誌文件名的一部分
     private DateFormat formatter = new SimpleDateFormat( "yyyy-MM-dd_HH-mm-ss.SSS");
     // default userInterface
-    protected boolean IsSaveCrashToFile = false ;//save crashinfo to file
-    protected boolean IsShowCrashFileToLogCat = true ;//load CrashInfo file to logcat by Log.i(string)
+    protected boolean IsSaveCrashToFile = true ;//save crashinfo to file
+    protected boolean IsShowCrashFileToLogCat = false ;//load CrashInfo file to logcat by Log.i(string)
     protected boolean IsCollectDeviceInfo = true ;//collect deviceinfo, but those info..not useful...
     protected boolean IsShowCrashDialog = false;//donot work now.
-    protected boolean IsPrintTraceStack = true ;//same as IsSaveCrashToFile by printStackTrace()
+    protected boolean IsPrintTraceStack = false ;//same as IsSaveCrashToFile by printStackTrace()
     /**
      * 保證只有一個CrashHandler實例
      * */
@@ -287,7 +281,7 @@ public class MyCrashHandler implements Thread.UncaughtExceptionHandler
             String status = Environment.getExternalStorageDirectory().getAbsolutePath();
             if (status.equals(Environment.MEDIA_MOUNTED))
             {
-                APK_dir = mContext.getFilesDir().getAbsolutePath() + "/baidu/";// 保存到app的包名路徑下
+                APK_dir = mContext.getFilesDir().getAbsolutePath() + "/debug/";// 保存到app的包名路徑下
             }
             else
             {
@@ -299,6 +293,7 @@ public class MyCrashHandler implements Thread.UncaughtExceptionHandler
                 destDir.mkdirs();
             }
             FileOutputStream fos = new FileOutputStream(APK_dir + fileName);
+            Log.e(TAG,APK_dir + fileName) ;
             fos.write(sb.toString().getBytes());
             //發送給開發人員Logcat
             if (IsShowCrashFileToLogCat == true) sendCrashLogCat(APK_dir + fileName);
@@ -401,7 +396,7 @@ public class MyCrashHandler implements Thread.UncaughtExceptionHandler
     //Uncaught Exception Handler(Crash Exception)
     MyCrashHandler pCrashHandler = MyCrashHandler.getInstance();
     pCrashHandler.init(getApplicationContext());
-    //protected String TAG = "" ;
+    //protected static String TAG ;
     TAG = pCrashHandler.getTag() ;
  }
  和
